@@ -1,0 +1,40 @@
+
+[font]
+# Font size in points.
+size = 14.0
+
+# The normal (default) font style.
+[font.normal]
+# The name of the font family.
+family = "MonoLisa"
+# The font style.
+style = "Regular"
+
+# The bold font style.
+# If the family is not specified, it will fall back to the normal font family.
+[font.bold]
+family = "MonoLisa"
+style = "Bold"
+
+# The italic font style.
+# If the family is not specified, it will fall back to the normal font family.
+[font.italic]
+family = "MonoLisa"
+style = "Italic"
+
+# The bold and italic font style.
+# If the family is not specified, it will fall back to the normal font family.
+[font.bold_italic]
+family = "MonoLisa"
+style = "Bold Italic"
+
+# Additional space around characters.
+[font.offset]
+x = 0
+y = 1
+
+# Offset of the glyphs within their cells.
+[font.glyph_offset]
+x = 0
+y = 0
+
