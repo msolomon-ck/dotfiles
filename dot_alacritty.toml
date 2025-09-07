@@ -1,4 +1,9 @@
 
+[general]
+import = [
+    "~/.config/alacritty/themes/themes/github_dark_dimmed.toml"
+]
+
 [font]
 # Font size in points.
 size = 14.0
