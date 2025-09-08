@@ -4,6 +4,17 @@ import = [
     "~/.config/alacritty/themes/themes/github_dark_dimmed.toml"
 ]
 
+# Make links clickable
+[[hints.enabled]]
+ command        = "open"
+hyperlinks      = true
+post_processing = true
+persist         = false
+mouse.enabled   = true
+mouse.mods      = "Control" # "Control|Shift" is my preference
+binding         = { key = "O", mods = "Control|Shift" }
+regex           = "(ipfs:|ipns:|magnet:|mailto:|gemini://|go‐pher://|https://|http://|news:|file:|git://|ssh:|ftp://)[^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+
 [font]
 # Font size in points.
 size = 14.0
