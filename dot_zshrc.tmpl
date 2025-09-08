@@ -131,12 +131,21 @@ export FZF_ALT_C_OPTS="
   --walker-skip .git,node_modules,target
   --preview 'tree -C {}'"
 
+
+# Helpful funcitons
 go() {
   local dir
   dir=$(find ~/dev -mindepth 1 -maxdepth 1 -type d | fzf --height=40% --reverse --prompt="~/dev: ")
   if [[ -n "$dir" ]]; then
     cd "$dir" || echo "Failed to cd into $dir"
   fi
+}
+
+ghopen() {
+    local branch_name="${1:-$(git branch --show-current)}"
+
+    if ! command -v gh &> /dev/null; then
+        echo "Error: GitHub CLI isn't installed or not in $PATH"
 }
 
 # Environment Exports
