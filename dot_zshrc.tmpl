@@ -176,6 +176,9 @@ export NVM_DIR="$HOME/.nvm"
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
+{{ if .isWork }}
+export GH_TOKEN="{{ onepasswordRead "op://Employee/ZSH GitHub Token/password" }}"
+{{ else }}
 export GH_TOKEN="{{ onepasswordRead "op://Personal/ZSH GitHub Token/password" }}"
-
+{{ end  }}
 
