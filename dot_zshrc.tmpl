@@ -107,7 +107,7 @@ source $ZSH/oh-my-zsh.sh
 alias c=chezmoi
 
 # Configure tmux
-if [ -z "$TMUX" ]; then
+if [ -z "$TMUX" ] && [ "$INTEGRATED_TERMINAL" != "true" ]; then
     tmux attach -t main || tmux new -s main
 fi
 
@@ -139,6 +139,32 @@ go() {
   if [[ -n "$dir" ]]; then
     cd "$dir" || echo "Failed to cd into $dir"
   fi
+}
+
+gho() {
+  if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "Error: Not in a git repository"
+    return 1
+  fi
+  
+  local branch=$(git branch --show-current)
+  local remote_url=$(git remote get-url origin 2>/dev/null)
+  
+  if [[ -z "$remote_url" ]]; then
+    echo "Error: No remote origin found"
+    return 1
+  fi
+  
+  # Convert SSH URL to HTTPS if needed
+  if [[ "$remote_url" =~ ^git@github\.com: ]]; then
+    remote_url=$(echo "$remote_url" | sed 's/git@github\.com:/https:\/\/github.com\//' | sed 's/\.git$//')
+  elif [[ "$remote_url" =~ ^https://github\.com/ ]]; then
+    remote_url=$(echo "$remote_url" | sed 's/\.git$//')
+  fi
+  
+  local repo_url="${remote_url}/tree/${branch}"
+  echo "Opening: $repo_url"
+  gh browse --branch "$branch"
 }
 
 # Environment Exports
