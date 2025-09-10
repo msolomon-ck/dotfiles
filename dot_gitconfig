@@ -1,37 +1,80 @@
 [user]
-	email = macksol@gmail.com
-	name = Mack Solomon
-[push]
-        autoSetupRemote = true
+    # Replace these values with your actual name and email
+    name = Your Name
+    email = your_email@example.com
+
+[core]
+    # Set your preferred text editor for writing commit messages, rebasing, etc.
+    editor = vim 
+    
+[init]
+    # Set the default name for the initial branch when creating a new repository
+    defaultBranch = main
+
+[pull]
+    # Automatically rebase local commits on top of the fetched branch before merging
+    rebase = true
+
 [alias]
-        # add
-        a = add
-        ap = add -p
-        c = commit --verbose
-        ca = commit -a --verbose
-        cm = commit -m
-        cam = commit -a -m
-        m = commit --amend --verbose
-        cmd = "!f() { git add . && git commit -m \"change\"; }; f"
+    # --- Workflow Aliases ---
+    
+    # Status and Staging
+    st = status -sb
+    add = add .
+    unstage = reset HEAD --
 
-        # diff
-        d = diff
-        ds = diff --stat
-        dc = diff --cached
+    # Quick commit with default message
+    cmd = !git add . && git commit -m "change"
+    
+    # Committing
+    ci = commit
+    amend = commit --amend --no-edit
 
-        s = status -s
-        co = checkout
-        cob = checkout -b
-
-        b = "!git for-each-ref --sort='-authordate' --format='%(authordate)%09%(objectname:short)%09%(refname)' refs/heads | sed -e 's-refs/heads/--'"
-
-        la = "!git config -l | grep alias | cut -c 7-"
-[filter "lfs"]
-        clean = git-lfs clean -- %f
-        smudge = git-lfs smudge -- %f
-        process = git-lfs filter-process
-        required = true
-[credential]
-	helper = osxkeychain
-[mergetool]
-	prompt = false
+    # Branching and Checkout
+    co = checkout
+    br = branch
+    new = checkout -b
+    del = branch -d
+    
+    # Fetching and Pruning
+    pu = push
+    pl = pull
+    prune = remote prune origin
+    
+    # Interactive commands
+    addp = add --patch
+    checkoutp = checkout --patch
+    diffp = diff --patch
+    
+    # Rebase
+    reb = rebase
+    rebi = rebase -i
+    
+    # Stashing
+    stash-save = stash push -u
+    pop = stash pop
+    
+    # Restoring Files (using 'restore' which is the modern 'checkout --')
+    restore = checkout --
+    
+    # --- History and Log Aliases ---
+    
+    # A cleaner, more compact log
+    lg = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+    
+    # A standard detailed log
+    log = log --oneline --decorate --graph --all
+    
+    # Show the last commit
+    last = log -1 HEAD
+    
+    # --- Utility Aliases ---
+    
+    # Show all files tracked by Git
+    ls = ls-files
+    
+    # Show untracked files
+    untracked = ls-files -o --exclude-standard
+    
+    # Show a list of all current aliases
+    alias = !git config --get-regexp alias
