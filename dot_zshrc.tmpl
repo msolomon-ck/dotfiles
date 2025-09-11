@@ -107,9 +107,9 @@ source $ZSH/oh-my-zsh.sh
 alias c=chezmoi
 
 # Configure tmux
-if [ -z "$TMUX" ] && [ "$INTEGRATED_TERMINAL" != "true" ]; then
-    tmux attach -t main || tmux new -s main
-fi
+# if [ -z "$TMUX" ] && [ "$INTEGRATED_TERMINAL" != "true" ]; then
+#    tmux attach -t main || tmux new -s main
+# fi
 
 # Configure FZF
 source <(fzf --zsh)
@@ -118,7 +118,7 @@ source <(fzf --zsh)
 export FZF_CTRL_R_OPTS="
   --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
   --color header:italic
-  --header 'Press CTRL-Y to copy command into clipboard'"
+  --hdeader 'Press CTRL-Y to copy command into clipboard'"
 
 # Preview file content using bat (https://github.com/sharkdp/bat)
 export FZF_CTRL_T_OPTS="
@@ -172,13 +172,16 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
 {{ if .isWork }}
 export GH_TOKEN="{{ onepasswordRead "op://Employee/ZSH GitHub Token/password" }}"
 {{ else }}
 export GH_TOKEN="{{ onepasswordRead "op://Personal/ZSH GitHub Token/password" }}"
 {{ end  }}
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# Automatically set JAVA_HOME with SDKMAN!
+export JAVA_HOME=$(which java)
 
