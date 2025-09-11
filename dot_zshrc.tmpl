@@ -167,6 +167,10 @@ gho() {
   gh browse --branch "$branch"
 }
 
+idea() {
+  open -na "IntelliJ IDEA.app" --args "$@"
+}
+
 # Environment Exports
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -183,5 +187,5 @@ export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 # Automatically set JAVA_HOME with SDKMAN!
-export JAVA_HOME=$(which java)
+export JAVA_HOME=~/.sdkman/candidates/java/current
 
