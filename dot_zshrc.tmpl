@@ -141,34 +141,82 @@ go() {
   fi
 }
 
-gho() {
+# Use fzf to select and checkout a git branch, sorted by recent activity
+gbc() {
+  if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "Error: Not in a git repository"
+    return 1
+  fi
+  
+  local branch
+  branch=$(git for-each-ref --format='%(refname:short) %(committerdate:relative)' --sort=-committerdate refs/heads/ | \
+    fzf --height=40% --reverse --prompt="Checkout branch: " --preview="git log --oneline --graph --color=always {1}" | \
+    awk '{print $1}')
+  
+  if [[ -n "$branch" ]]; then
+    git checkout "$branch"
+  fi
+}
+
+# open the current directory in intellij
+idea() {
+  open -na "IntelliJ IDEA.app" --args "$@"
+}
+
+# Open current git branch in a new browser window using gh cli
+ghb() {
   if ! git rev-parse --git-dir > /dev/null 2>&1; then
     echo "Error: Not in a git repository"
     return 1
   fi
   
   local branch=$(git branch --show-current)
-  local remote_url=$(git remote get-url origin 2>/dev/null)
-  
-  if [[ -z "$remote_url" ]]; then
-    echo "Error: No remote origin found"
+  if [[ -z "$branch" ]]; then
+    echo "Error: Could not determine current branch"
     return 1
   fi
   
-  # Convert SSH URL to HTTPS if needed
-  if [[ "$remote_url" =~ ^git@github\.com: ]]; then
-    remote_url=$(echo "$remote_url" | sed 's/git@github\.com:/https:\/\/github.com\//' | sed 's/\.git$//')
-  elif [[ "$remote_url" =~ ^https://github\.com/ ]]; then
-    remote_url=$(echo "$remote_url" | sed 's/\.git$//')
-  fi
-  
-  local repo_url="${remote_url}/tree/${branch}"
-  echo "Opening: $repo_url"
+  echo "Opening branch '$branch' in new window..."
   gh browse --branch "$branch"
 }
 
-idea() {
-  open -na "IntelliJ IDEA.app" --args "$@"
+# Git stash management with fzf - list, preview, apply, or drop stashes
+gsf() {
+  if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "Error: Not in a git repository"
+    return 1
+  fi
+  
+  local stashes
+  stashes=$(git stash list --format="%gd: %gs (%cr)" 2>/dev/null)
+  
+  if [[ -z "$stashes" ]]; then
+    echo "No stashes found"
+    return 0
+  fi
+  
+  local selected
+  selected=$(echo "$stashes" | \
+    fzf --height=40% --reverse --prompt="Stash action: " \
+        --preview="git stash show -p {1} --color=always" \
+        --header="Enter=apply, Ctrl-D=drop, Ctrl-P=pop, Esc=cancel" \
+        --bind="ctrl-d:execute(git stash drop {1})+reload(git stash list --format='%gd: %gs (%cr)')" \
+        --bind="ctrl-p:accept" \
+        --expect="ctrl-p")
+  
+  if [[ -n "$selected" ]]; then
+    local key=$(echo "$selected" | head -1)
+    local stash=$(echo "$selected" | tail -1 | awk '{print $1}')
+    
+    case "$key" in
+      "ctrl-p")
+        git stash pop "$stash"
+        ;;
+      *)
+        git stash apply "$stash"
+        ;;
+    esac
+  fi
 }
 
 # Environment Exports
@@ -189,3 +237,4 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # Automatically set JAVA_HOME with SDKMAN!
 export JAVA_HOME=~/.sdkman/candidates/java/current
 
+export PATH="$JAVA_HOME/bin:$HOME/.local/bin:$PATH"
