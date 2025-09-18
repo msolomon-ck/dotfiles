@@ -219,6 +219,55 @@ gsf() {
   fi
 }
 
+# Delete tag locally and remotely, then create and push a new one
+tag() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: tag <tag-name>"
+    return 1
+  fi
+  
+  if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "Error: Not in a git repository"
+    return 1
+  fi
+  
+  local tag_name="$1"
+  
+  echo "Processing tag: $tag_name"
+  
+  # Delete tag locally if it exists
+  if git tag -l | grep -q "^${tag_name}$"; then
+    echo "Deleting local tag: $tag_name"
+    git tag -d "$tag_name"
+  else
+    echo "Local tag '$tag_name' does not exist"
+  fi
+  
+  # Delete tag remotely if it exists
+  echo "Attempting to delete remote tag: $tag_name"
+  git push origin --delete "$tag_name" 2>/dev/null || echo "Remote tag '$tag_name' does not exist or already deleted"
+  
+  # Create new tag locally
+  echo "Creating new local tag: $tag_name"
+  git tag "$tag_name"
+  
+  # Push tag to remote
+  echo "Pushing tag to remote: $tag_name"
+  git push origin "$tag_name"
+  
+  echo "Tag '$tag_name' has been successfully recreated and pushed"
+  
+  # Extract repository name and print CCI workflows link
+  local remote_url=$(git remote get-url origin 2>/dev/null)
+  if [[ -n "$remote_url" ]]; then
+    local repo_name=$(echo "$remote_url" | sed -E 's/.*[\/:]([^\/]+)\.git$/\1/')
+    if [[ -n "$repo_name" ]]; then
+      echo ""
+      echo "CCI Workflows: https://app.gcp-circleci.build.corp.creditkarma.com/pipelines/github/ck-private/$repo_name"
+    fi
+  fi
+}
+
 # Environment Exports
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
