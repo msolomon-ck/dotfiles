@@ -108,9 +108,9 @@ source $ZSH/oh-my-zsh.sh
 alias c=chezmoi
 
 # Configure tmux
-# if [ -z "$TMUX" ] && [ "$INTEGRATED_TERMINAL" != "true" ]; then
-#    tmux attach -t main || tmux new -s main
-# fi
+if [ -z "$TMUX" ] && [ "$INTEGRATED_TERMINAL" != "true" ] && [ "$TERM_PROGRAM" != "vscode" ]; then
+    tmux new-session
+fi
 
 # Configure FZF
 source <(fzf --zsh)
@@ -270,17 +270,32 @@ tag() {
 }
 
 function ds() {
-     docker stop $(docker ps -a -q)
+    docker stop $(docker ps -q) && docker rm $(docker ps -aq)
 }
 
 # Environment Exports
 
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 {{ if .isWork }}
 export GH_TOKEN="{{ onepasswordRead "op://Employee/ZSH GitHub Token/password" }}"
-{{ else }}export GH_TOKEN="{{ onepasswordRead "op://Personal/ZSH GitHub Token/password" }}"
+export GITHUB_TOKEN="{{ onepasswordRead "op://Employee/ZSH GitHub Token/password" }}"
+#export ANTHROPIC_API_KEY="{{ onepasswordRead "op://Employee/AI Gateway Token/password" }}"
+export ANTHROPIC_AUTH_TOKEN="{{ onepasswordRead "op://Employee/AI Gateway Token/password" }}"
+export AI_GATEWAY_TOKEN="{{ onepasswordRead "op://Employee/AI Gateway Token GSA/password" }}"
+export NEW_RELIC_OBS_NRTF_TOKEN="{{ onepasswordRead "op://Employee/Obs Nrtf Token/password" }}"
+export ANTHROPIC_BASE_URL="https://ai-gateway.aitools.creditkarma.com/anthropic"
+export CIRCLE_OAUTH_TOKEN="{{ onepasswordRead "op://Employee/CircleCI OAuth Token/password" }}"
+{{ else }}
+export GH_TOKEN="{{ onepasswordRead "op://Personal/ZSH GitHub Token/password" }}"
 {{ end  }}
 
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
-jenv enable-plugin export
+export PATH="$PATH:/Users/msolomon1/Library/Application Support/Coursier/bin"
+
+
+
 
